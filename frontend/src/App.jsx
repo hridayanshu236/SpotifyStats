@@ -27,7 +27,7 @@ const DashboardWrapper = () => {
     // Check if the user is authenticated
     const checkAuthStatus = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/auth/status', { withCredentials: true });
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/status`, { withCredentials: true });
         setAuthenticated(response.data.authenticated);
         if (response.data.authenticated) {
           setAccessToken(response.data.accessToken); // Assuming the backend returns the access token
@@ -46,7 +46,7 @@ const DashboardWrapper = () => {
     return <div>Loading...</div>;
   }
 
-  return authenticated ? <Dashboard accessToken={accessToken}/> : <Login />;
+  return authenticated ? <Dashboard accessToken={accessToken} /> : <Login />;
 };
 
 export default App;

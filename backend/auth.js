@@ -40,7 +40,7 @@ router.get('/callback', async (req, res) => {
         res.cookie('accessToken', access_token, { httpOnly: true, secure: process.env.NODE_ENV });
         res.cookie('refreshToken', refresh_token, { httpOnly: true, secure: process.env.NODE_ENV });
 
-        res.redirect('http://localhost:3000/dashboard');
+        res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
     } catch (error) {
         console.error('Error exchanging code for token:', error);
         res.status(500).send('Internal Server Error');

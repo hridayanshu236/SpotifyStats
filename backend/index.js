@@ -20,6 +20,9 @@ app.use(cookieParser());
 //Routes for handling Spotify oAuth
 app.use('/auth', authRoutes);
 
+app.get("/", (req,res) => {
+    res.json({message:"Hello from backend"});
+});
 app.listen(port, () => {
     console.log(`Server is running on ${port}`);
 })

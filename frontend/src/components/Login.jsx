@@ -4,7 +4,7 @@ import { faSpotify } from '@fortawesome/free-brands-svg-icons'; // Import the Sp
 
 const Login = () => {
     const handleLogin = () => {
-        window.location.href = 'http://localhost:3001/auth/login';
+        window.location.href = `${process.env.REACT_APP_BACKEND_URL}/auth/login`;
     };
 
     return (

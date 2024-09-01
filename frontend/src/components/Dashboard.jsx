@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBarChart, faMusic, faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { faBarChart, faBars, faMusic, faSignOut, faUser, faX } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import { Bar, Doughnut } from 'react-chartjs-2';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, DoughnutController, CategoryScale, LinearScale, ArcElement } from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(Title, Tooltip, Legend, BarElement, DoughnutController, CategoryScale, LinearScale, ArcElement);
 
 const Dashboard = ({ accessToken }) => {
     const [userData, setUserData] = useState(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [topTracks, setTopTracks] = useState([]);
+    const [topArtists, setTopArtists] = useState([]);
+    const [timeRange, setTimeRange] = useState('short_term'); // default to 'short_term'
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,35 +27,106 @@ const Dashboard = ({ accessToken }) => {
                 });
                 setUserData(userResponse.data);
 
-                const tracksResponse = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
+                // Fetch top tracks based on timeRange
+                const tracksResponse = await axios.get(`https://api.spotify.com/v1/me/top/tracks?time_range=${timeRange}`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
                 setTopTracks(tracksResponse.data.items);
+
+                // Fetch top artists based on timeRange
+                const artistsResponse = await axios.get(`https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                setTopArtists(artistsResponse.data.items);
             } catch (error) {
                 console.error('Error fetching data from Spotify API:', error);
             }
         };
 
         fetchData();
-    }, [accessToken]);
+    }, [accessToken, timeRange]);
 
+    // Handle time range change
+    const handleTimeRangeChange = (event) => {
+        setTimeRange(event.target.value);
+    };
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    }
 
     const handleSignOut = async () => {
         try {
-            await axios.post('http://localhost:3001/auth/logout', {}, { withCredentials: true });
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/logout`,{}, { withCredentials: true });
             navigate('/');
         } catch (error) {
             console.error('Error signing out:', error);
         }
     };
+
+    // Prepare data for charts
+    const topTracksData = {
+        labels: topTracks.map(track => track.name),
+        datasets: [
+            {
+                label: 'Streams',
+                data: topTracks.map(track => track.popularity), // Use popularity or another metric
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const topArtistsData = {
+        labels: topArtists.map(artist => artist.name),
+        datasets: [
+            {
+                label: 'Followers',
+                data: topArtists.map(artist => artist.followers.total), // Use followers count or another metric
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    // Data for Donut charts
+    const topTracksDonutData = {
+        labels: topTracks.map(track => track.name),
+        datasets: [
+            {
+                data: topTracks.map(track => track.popularity), // Use popularity or another metric
+                backgroundColor: topTracks.map((_, i) => `hsl(${i * 30}, 70%, 50%)`), // Different colors for each track
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const topArtistsDonutData = {
+        labels: topArtists.map(artist => artist.name),
+        datasets: [
+            {
+                data: topArtists.map(artist => artist.followers.total), // Use followers count or another metric
+                backgroundColor: topArtists.map((_, i) => `hsl(${i * 30}, 70%, 50%)`), // Different colors for each artist
+                borderWidth: 1,
+            },
+        ],
+    };
+
     return (
         <div className='flex min-h-screen bg-black'>
             {/* Sidebar Section */}
             {userData && (
-                <div className='flex flex-col h-[full]  bg-black text-white p-4 mb-4'>
-                    <div className='flex items-center justify-center mb-4'>
+                <div className={`fixed top-0 left-0 w-[250px] h-[100vh] bg-black text-white z-50 transition-transform duration-500 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                    <div className=''>
+                        <FontAwesomeIcon icon={faX} onClick={toggleSidebar} className='cursor-pointer text-white' />
+                    </div>
+                    <div className='flex items-center justify-center mb-4 pt-4'>
                         <img
                             src={userData.images[0]?.url}
                             alt={userData.display_name}
@@ -57,30 +136,88 @@ const Dashboard = ({ accessToken }) => {
                     <div className='text-center mb-6 font-semibold'>
                         <h2 className='text-green-700 text-xl'>{userData.display_name}</h2>
                     </div>
-                    <div className='flex flex-col font-semibold '>
-                        
-                        <button className=' text-white p-2  rounded hover:text-green-500'>
-                        <FontAwesomeIcon icon={faBarChart}></FontAwesomeIcon> Dashboard
-                        </button>
-                        <button className=' text-white p-2 rounded hover:text-green-500'
-                        onClick={handleSignOut}>
-                        <FontAwesomeIcon icon={faSignOut}></FontAwesomeIcon> Sign Out
+                    <div className='flex flex-col font-semibold'>
+                        {/* <button className='text-white p-2 rounded hover:text-green-500'>
+                            <FontAwesomeIcon icon={faUser} /> Profile
+                        </button> */}
+                        {/* <button className='text-white p-2 rounded hover:text-green-500'>
+                            <FontAwesomeIcon icon={faBarChart} /> Dashboard
+                        </button> */}
+                        <button className='text-white p-2 rounded hover:text-green-500' onClick={handleSignOut}>
+                            <FontAwesomeIcon icon={faSignOut} /> Sign Out
                         </button>
                     </div>
                 </div>
             )}
 
-            {/* Main Content Section */}
-            <div className='flex flex-col w-full  bg-white p-4'>
-                <h2 className='text-black text-2xl mb-4'>My Dashboard</h2>
-                <ul>
-                    {topTracks.map(track => (
-                        <li key={track.id} className='flex items-center py-2 border-b'>
-                            <FontAwesomeIcon icon={faMusic} className='text-black mr-2' />
-                            <span className='font-semibold'>{track.name}</span> - <span>{track.artists[0].name}</span>
-                        </li>
-                    ))}
-                </ul>
+            {/* Dashboard */}
+            <div className='flex flex-col w-full bg-white p-4'>
+                {/* Sidebar Toggle Button */}
+                <div className='flex justify-between items-center'>
+                    
+                    <h2 className='text-green-700 text-2xl p-4 font-bold'><FontAwesomeIcon icon={faBars} onClick={toggleSidebar} className='cursor-pointer text-black' /> MY DASHBOARD</h2>
+                </div>
+
+                <div className='flex flex-row p-3'>
+                    <div>
+                        <label htmlFor='time-range' className='block text-black mb-2'>Select Time Range:</label>
+                        <select id='time-range' value={timeRange} onChange={handleTimeRangeChange} className='p-2 border border-green-700 rounded'>
+                            <option value='short_term'>Past Month</option>
+                            <option value='medium_term'>Past 6 Months</option>
+                            <option value='long_term'>All Time</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className='flex flex-col p-3 space-y-6'>
+                    {/* Top Tracks Card */}
+                    <div className='flex flex-col bg-gray-100 p-4 rounded-lg shadow-lg'>
+                        <div>
+                            <h3 className='text-green-700 text-xl font-bold mb-4 block text-center'>Top Tracks</h3>
+                        </div>
+                        <div className='flex flex-col md:flex-row'>
+                            <div className='flex-1'>
+                                <ul className='py-2'>
+                                    {topTracks.map(track => (
+                                        <li key={track.id} className='flex items-center py-2 border-b'>
+                                            <FontAwesomeIcon icon={faMusic} className='text-black mr-2' />
+                                            <span className='font-semibold'>{track.name}</span> - <span>{track.artists[0].name}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className='flex-1 mt-4 md:mt-0 flex flex-col items-center'>
+                                <Bar data={topTracksData} options={{ responsive: true }} className='mb-4 w-full' />
+                                <Doughnut data={topTracksDonutData} options={{ responsive: true }} className='w-full' />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Top Artists Card */}
+                    <div className='flex flex-col bg-gray-100 p-4 rounded-lg shadow-lg'>
+                        <div>
+                            <h3 className='text-green-700 text-xl font-bold mb-4 block text-center'>Top Artists</h3>
+                        </div>
+                        <div className='flex flex-col md:flex-row'>
+                            <div className='flex-1'>
+                                <ul className='py-2'>
+                                    {topArtists.map(artist => (
+                                        <li key={artist.id} className='flex items-center py-2 border-b'>
+                                            <FontAwesomeIcon icon={faMusic} className='text-black mr-2' />
+                                            <span className='font-semibold'>{artist.name}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className='flex-1 mt-4 md:mt-0 flex flex-col items-center'>
+                                <Bar data={topArtistsData} options={{ responsive: true }} className='mb-4 w-full' />
+                                <Doughnut data={topArtistsDonutData} options={{ responsive: true }} className='w-full' />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
