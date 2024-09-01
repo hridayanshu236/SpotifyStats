@@ -9,7 +9,7 @@ import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, DoughnutControlle
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, BarElement, DoughnutController, CategoryScale, LinearScale, ArcElement);
 
-const Dashboard = ({ accessToken }) => {
+const Dashboard = () => {
     const [accessToken, setAccessToken] = useState(null);
     const [authenticated, setAuthenticated] = useState(null);
     const [userData, setUserData] = useState(null);
