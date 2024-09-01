@@ -7,6 +7,8 @@ const router = express.Router();
 
 
 const redirect_uri = `${process.env.BACKEND_URL}/auth/callback`;
+const client_id = process.env.SPOTIFY_CLIENT_ID; // Ensure this is defined in your environment variables
+
 console.log('Redirect URI:', redirect_uri); // Debug log
 
 router.use(cookieParser());
