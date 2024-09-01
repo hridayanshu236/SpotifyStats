@@ -70,13 +70,7 @@ const Dashboard = () => {
                 });
                 setTopArtists(artistsResponse.data.items);
             } catch (error) {
-                if (error.response && error.response.status === 403) {
-                    // Handle permission issue
-                    setError('Permission issue. Please reauthorize with the required scopes.');
-                } else {
-                    // Handle other errors
-                    setError('An error occurred. Please try again later.');
-                }
+                console.error('Error fetching data from Spotify API:', error);
             }
         };
 
