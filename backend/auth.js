@@ -40,8 +40,8 @@ router.get('/callback', async (req, res) => {
         const { access_token, refresh_token } = response.data;
 
         // Set tokens as cookies
-        res.cookie('accessToken', access_token, { httpOnly: true, secure: process.env.NODE_ENV });
-        res.cookie('refreshToken', refresh_token, { httpOnly: true, secure: process.env.NODE_ENV });
+        res.cookie('accessToken', access_token, { httpOnly: true, secure: process.env.NODE_ENV, sameSite: 'None' });
+        res.cookie('refreshToken', refresh_token, { httpOnly: true, secure: process.env.NODE_ENV, sameSite:'None' });
 
         res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
     } catch (error) {
