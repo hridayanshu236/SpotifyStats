@@ -65,8 +65,17 @@ router.get('/status', (req, res) => {
 });
 router.post('/logout', (req, res) => {
     // Clear the cookies
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    res.clearCookie('accessToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'None'
+        
+    });
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'None'
+    });
 
     // Optionally, you can also handle session destruction here if applicable
 
