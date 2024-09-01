@@ -31,9 +31,8 @@ const DashboardWrapper = () => {
         setAuthenticated(response.data.authenticated);
         if (response.data.authenticated) {
           setAccessToken(response.data.accessToken);
-        } else {
-          navigate('/'); // Redirect to login if not authenticated
-        }
+        } 
+        
       } catch (error) {
         console.error('Error checking authentication status:', error);
         setAuthenticated(false);
@@ -41,7 +40,7 @@ const DashboardWrapper = () => {
     };
 
     checkAuthStatus();
-  }, [navigate]);
+  }, []);
 
   if (authenticated === null) {
     return <div>Loading...</div>;
