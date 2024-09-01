@@ -1,6 +1,5 @@
-
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
@@ -22,6 +21,7 @@ const App = () => {
 const DashboardWrapper = () => {
   const [accessToken, setAccessToken] = useState(null);
   const [authenticated, setAuthenticated] = useState(null);
+  const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
     // Check if the user is authenticated
@@ -30,7 +30,9 @@ const DashboardWrapper = () => {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/status`, { withCredentials: true });
         setAuthenticated(response.data.authenticated);
         if (response.data.authenticated) {
-          setAccessToken(response.data.accessToken); // Assuming the backend returns the access token
+          setAccessToken(response.data.accessToken);
+        } else {
+          navigate('/'); // Redirect to login if not authenticated
         }
       } catch (error) {
         console.error('Error checking authentication status:', error);
@@ -39,7 +41,11 @@ const DashboardWrapper = () => {
     };
 
     checkAuthStatus();
-  }, []);
+  }, [navigate]);
+
+  if (authenticated === null) {
+    return <div>Loading...</div>;
+  }
 
   return authenticated ? <Dashboard accessToken={accessToken} /> : <Login />;
 };
