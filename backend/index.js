@@ -1,8 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const authRoutes = require('./auth');
-require('dotenv').config();
+
 
 const app = express();
 const port = process.env.PORT;
@@ -12,6 +13,7 @@ const corsOptions = {
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true // Allow cookies and credentials
 };
+
 
 // Apply middleware
 app.use(cors(corsOptions));
