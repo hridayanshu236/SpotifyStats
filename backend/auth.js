@@ -14,7 +14,7 @@ router.use(cookieParser());
 router.get('/login', (req, res) => {
     console.log("Trying logging in");
     var state = generateRandomString(16);
-  var scope = 'user-read-private user-read-email';
+  var scope = 'user-read-private user-read-email user-top-read';
 
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
