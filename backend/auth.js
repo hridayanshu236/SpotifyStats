@@ -11,19 +11,29 @@ console.log('Redirect URI:', redirect_uri); // Debug log
 
 router.use(cookieParser());
 
+// Generate a random string for the state parameter
+const generateRandomString = length => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+};
+
 router.get('/login', (req, res) => {
     console.log("Trying logging in");
     var state = generateRandomString(16);
-  var scope = 'user-read-private user-read-email user-top-read';
+    var scope = 'user-read-private user-read-email user-top-read';
 
-  res.redirect('https://accounts.spotify.com/authorize?' +
-    querystring.stringify({
-      response_type: 'code',
-      client_id: client_id,
-      scope: scope,
-      redirect_uri: redirect_uri,
-      state: state
-    }));
+    res.redirect('https://accounts.spotify.com/authorize?' +
+        querystring.stringify({
+            response_type: 'code',
+            client_id: client_id,
+            scope: scope,
+            redirect_uri: redirect_uri,
+            state: state
+        }));
 });
 router.get('/callback', async (req, res) => {
     const { code } = req.query;
@@ -45,7 +55,7 @@ router.get('/callback', async (req, res) => {
 
         // Set tokens as cookies
         res.cookie('accessToken', access_token, { httpOnly: true, secure: process.env.NODE_ENV, sameSite: 'None' });
-        res.cookie('refreshToken', refresh_token, { httpOnly: true, secure: process.env.NODE_ENV, sameSite:'None' });
+        res.cookie('refreshToken', refresh_token, { httpOnly: true, secure: process.env.NODE_ENV, sameSite: 'None' });
 
         res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
     } catch (error) {
@@ -72,7 +82,7 @@ router.post('/logout', (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'None'
-        
+
     });
     res.clearCookie('refreshToken', {
         httpOnly: true,
