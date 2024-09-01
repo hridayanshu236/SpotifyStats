@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 
 const router = express.Router();
 
-const redirect_uri = `${process.env.BACKEND_URL}/callback`;
+const redirect_uri = `${process.env.BACKEND_URL}/auth/callback`;
 router.use(cookieParser());
 
 router.get('/login', (req, res) => {
