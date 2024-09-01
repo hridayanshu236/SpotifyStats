@@ -196,17 +196,26 @@ const Dashboard = () => {
                 </div>
 
                 <div className='flex flex-col p-3 space-y-6'>
-                    {/* Top Tracks Card */}
-                    <div className='flex flex-col bg-gray-100 p-4 rounded-lg shadow-lg'>
+                     {/* Top Tracks Card */}
+                     <div className='flex flex-col bg-gray-100 p-4 rounded-lg shadow-lg'>
                         <div>
                             <h3 className='text-green-700 text-xl font-bold mb-4 block text-center'>Top Tracks</h3>
                         </div>
                         <div className='flex flex-col md:flex-row'>
-                            <div className='w-full md:w-1/2 p-2'>
-                                <Bar data={topTracksData} options={{ responsive: true, plugins: { legend: { display: false }, title: { display: true, text: 'Top Tracks' } } }} />
+                            <div className='flex-1'>
+                                <ul className='py-2'>
+                                    {topTracks.map(track => (
+                                        <li key={track.id} className='flex items-center py-2 border-b'>
+                                            <FontAwesomeIcon icon={faMusic} className='text-black mr-2' />
+                                            <span className='font-semibold'>{track.name}</span> - <span>{track.artists[0].name}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                            <div className='w-full md:w-1/2 p-2'>
-                                <Doughnut data={topTracksDonutData} options={{ responsive: true, plugins: { legend: { display: true }, title: { display: true, text: 'Top Tracks Distribution' } } }} />
+
+                            <div className='flex-1 mt-4 md:mt-0 flex flex-col items-center'>
+                                <Bar data={topTracksData} options={{ responsive: true }} className='mb-4 w-full' />
+                                <Doughnut data={topTracksDonutData} options={{ responsive: true }} className='w-full' />
                             </div>
                         </div>
                     </div>
@@ -217,11 +226,20 @@ const Dashboard = () => {
                             <h3 className='text-green-700 text-xl font-bold mb-4 block text-center'>Top Artists</h3>
                         </div>
                         <div className='flex flex-col md:flex-row'>
-                            <div className='w-full md:w-1/2 p-2'>
-                                <Bar data={topArtistsData} options={{ responsive: true, plugins: { legend: { display: false }, title: { display: true, text: 'Top Artists' } } }} />
+                            <div className='flex-1'>
+                                <ul className='py-2'>
+                                    {topArtists.map(artist => (
+                                        <li key={artist.id} className='flex items-center py-2 border-b'>
+                                            <FontAwesomeIcon icon={faMusic} className='text-black mr-2' />
+                                            <span className='font-semibold'>{artist.name}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                            <div className='w-full md:w-1/2 p-2'>
-                                <Doughnut data={topArtistsDonutData} options={{ responsive: true, plugins: { legend: { display: true }, title: { display: true, text: 'Top Artists Distribution' } } }} />
+
+                            <div className='flex-1 mt-4 md:mt-0 flex flex-col items-center'>
+                                <Bar data={topArtistsData} options={{ responsive: true }} className='mb-4 w-full' />
+                                <Doughnut data={topArtistsDonutData} options={{ responsive: true }} className='w-full' />
                             </div>
                         </div>
                     </div>
