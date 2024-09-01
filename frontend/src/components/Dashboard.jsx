@@ -10,12 +10,39 @@ import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, DoughnutControlle
 ChartJS.register(Title, Tooltip, Legend, BarElement, DoughnutController, CategoryScale, LinearScale, ArcElement);
 
 const Dashboard = ({ accessToken }) => {
+    const [accessToken, setAccessToken] = useState(null);
+    const [authenticated, setAuthenticated] = useState(null);
     const [userData, setUserData] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [topTracks, setTopTracks] = useState([]);
     const [topArtists, setTopArtists] = useState([]);
     const [timeRange, setTimeRange] = useState('short_term'); // default to 'short_term'
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Check if the user is authenticated
+        const checkAuthStatus = async () => {
+          try {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/status`, { withCredentials: true });
+            setAuthenticated(response.data.authenticated);
+            if (response.data.authenticated) {
+              setAccessToken(response.data.accessToken);
+            } else {
+              navigate('/'); // Redirect to login if not authenticated
+            }
+          } catch (error) {
+            console.error('Error checking authentication status:', error);
+            setAuthenticated(false);
+            navigate('/'); // Redirect to login on error
+          }
+        };
+    
+        checkAuthStatus();
+      }, [navigate]);
+    
+      if (authenticated === null) {
+        return <div>Loading...</div>;
+      }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -118,7 +145,7 @@ const Dashboard = ({ accessToken }) => {
         ],
     };
 
-    return (
+    return authenticated ? (
         <div className='flex min-h-screen bg-black'>
             {/* Sidebar Section */}
             {userData && (
@@ -220,7 +247,7 @@ const Dashboard = ({ accessToken }) => {
                 </div>
             </div>
         </div>
-    );
+    ): null;
 };
 
 export default Dashboard;
