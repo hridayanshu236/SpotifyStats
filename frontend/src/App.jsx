@@ -29,6 +29,7 @@ const DashboardWrapper = () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/status`, { withCredentials: true });
         setAuthenticated(response.data.authenticated);
+        console.log(response.data.authenticated);
         if (response.data.authenticated) {
           setAccessToken(response.data.accessToken);
         } else {
