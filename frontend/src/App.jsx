@@ -41,11 +41,6 @@ const DashboardWrapper = () => {
     checkAuthStatus();
   }, []);
 
-  if (authenticated === null) {
-    // Optional: Loading state while checking authentication
-    return <div>Loading...</div>;
-  }
-
   return authenticated ? <Dashboard accessToken={accessToken} /> : <Login />;
 };
 

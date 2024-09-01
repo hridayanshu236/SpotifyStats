@@ -12,6 +12,7 @@ console.log('Redirect URI:', redirect_uri); // Debug log
 router.use(cookieParser());
 
 router.get('/login', (req, res) => {
+    console.log("Trying logging in");
     const scope = 'user-read-private user-read-email user-top-read';
     const queryParams = querystring.stringify({
         client_id: process.env.SPOTIFY_CLIENT_ID,
