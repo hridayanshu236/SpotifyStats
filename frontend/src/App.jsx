@@ -1,35 +1,52 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import axios from 'axios';
 
-const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
-};
-
+// Main App component with Router
 const App = () => {
   return (
-    <>
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route
-          path="/dashboard"
-          element={<DashboardWrapper />}
-        />
+        <Route path="/dashboard" element={<DashboardWrapper />} />
       </Routes>
     </Router>
-    </>
   );
 }
 
-// Wrapper component for Dashboard to handle token logic
-function DashboardWrapper() {
-  const query = useQuery();
-  const accessToken = query.get('access_token');
+// Wrapper component to handle token logic and render Dashboard
+const DashboardWrapper = () => {
+  const [accessToken, setAccessToken] = useState(null);
+  const [authenticated, setAuthenticated] = useState(null);
 
-  return accessToken ? <Dashboard accessToken={accessToken} /> : <Login />;
-}
+  useEffect(() => {
+    // Check if the user is authenticated
+    const checkAuthStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/auth/status', { withCredentials: true });
+        setAuthenticated(response.data.authenticated);
+        if (response.data.authenticated) {
+          setAccessToken(response.data.accessToken); // Assuming the backend returns the access token
+        }
+      } catch (error) {
+        console.error('Error checking authentication status:', error);
+        setAuthenticated(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  if (authenticated === null) {
+    // Optional: Loading state while checking authentication
+    return <div>Loading...</div>;
+  }
+
+  return authenticated ? <Dashboard accessToken={accessToken}/> : <Login />;
+};
 
 export default App;

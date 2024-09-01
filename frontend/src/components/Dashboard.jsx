@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBarChart, faMusic, faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = ({ accessToken }) => {
     const [userData, setUserData] = useState(null);
     const [topTracks, setTopTracks] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -31,6 +33,15 @@ const Dashboard = ({ accessToken }) => {
         fetchData();
     }, [accessToken]);
 
+
+    const handleSignOut = async () => {
+        try {
+            await axios.post('http://localhost:3001/auth/logout', {}, { withCredentials: true });
+            navigate('/');
+        } catch (error) {
+            console.error('Error signing out:', error);
+        }
+    };
     return (
         <div className='flex min-h-screen bg-black'>
             {/* Sidebar Section */}
@@ -51,7 +62,8 @@ const Dashboard = ({ accessToken }) => {
                         <button className=' text-white p-2  rounded hover:text-green-500'>
                         <FontAwesomeIcon icon={faBarChart}></FontAwesomeIcon> Dashboard
                         </button>
-                        <button className=' text-white p-2 rounded hover:text-green-500'>
+                        <button className=' text-white p-2 rounded hover:text-green-500'
+                        onClick={handleSignOut}>
                         <FontAwesomeIcon icon={faSignOut}></FontAwesomeIcon> Sign Out
                         </button>
                     </div>
@@ -60,7 +72,7 @@ const Dashboard = ({ accessToken }) => {
 
             {/* Main Content Section */}
             <div className='flex flex-col w-full  bg-white p-4'>
-                <h2 className='text-black text-2xl mb-4'>Your Top Tracks</h2>
+                <h2 className='text-black text-2xl mb-4'>My Dashboard</h2>
                 <ul>
                     {topTracks.map(track => (
                         <li key={track.id} className='flex items-center py-2 border-b'>
