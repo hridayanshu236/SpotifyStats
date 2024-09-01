@@ -13,14 +13,17 @@ router.use(cookieParser());
 
 router.get('/login', (req, res) => {
     console.log("Trying logging in");
-    const scope = 'user-read-private user-read-email user-top-read';
-    const queryParams = querystring.stringify({
-        client_id: process.env.SPOTIFY_CLIENT_ID,
-        response_type: 'code',
-        redirect_uri,
-        scope
-    });
-    res.redirect(`https://accounts.spotify.com/authorize?${queryParams}`);
+    var state = generateRandomString(16);
+  var scope = 'user-read-private user-read-email';
+
+  res.redirect('https://accounts.spotify.com/authorize?' +
+    querystring.stringify({
+      response_type: 'code',
+      client_id: client_id,
+      scope: scope,
+      redirect_uri: redirect_uri,
+      state: state
+    }));
 });
 router.get('/callback', async (req, res) => {
     const { code } = req.query;
