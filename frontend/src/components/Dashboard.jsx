@@ -70,7 +70,13 @@ const Dashboard = () => {
                 });
                 setTopArtists(artistsResponse.data.items);
             } catch (error) {
-                console.error('Error fetching data from Spotify API:', error);
+                if (error.response && error.response.status === 403) {
+                    // Handle permission issue
+                    setError('Permission issue. Please reauthorize with the required scopes.');
+                } else {
+                    // Handle other errors
+                    setError('An error occurred. Please try again later.');
+                }
             }
         };
 
@@ -153,7 +159,7 @@ const Dashboard = () => {
         <div className='flex min-h-screen bg-black'>
             {/* Sidebar Section */}
             {userData && (
-                <div className={`fixed top-0 left-0 w-[250px] h-[100vh] bg-black text-white z-50 transition-transform duration-500 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className={`fixed top-0 left-0 w-[250px] h-[100vh] bg-black bg-opacity-80 text-white z-50 transition-transform duration-500 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <div className='p-4'>
                         <FontAwesomeIcon icon={faX} onClick={toggleSidebar} className='cursor-pointer text-white' />
                     </div>
