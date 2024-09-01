@@ -22,21 +22,23 @@ const Dashboard = () => {
     useEffect(() => {
         // Check if the user is authenticated
         const checkAuthStatus = async () => {
-          try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/status`, { withCredentials: true });
-            setAuthenticated(response.data.authenticated);
-            if (response.data.authenticated) {
-              setAccessToken(response.data.accessToken);
-            } else {
-              navigate('/'); // Redirect to login if not authenticated
+            try {
+                console.log('Checking authentication status...');
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/status`, { withCredentials: true });
+                console.log('Authentication response:', response.data);
+                if (response.data.authenticated) {
+                    setAuthenticated(true);
+                    setAccessToken(response.data.accessToken);
+                } else {
+                    setAuthenticated(false);
+                    navigate('/'); // Redirect to login if not authenticated
+                }
+            } catch (error) {
+                console.error('Error checking authentication status:', error);
+                setAuthenticated(false);
+                navigate('/'); // Redirect to login on error
             }
-          } catch (error) {
-            console.error('Error checking authentication status:', error);
-            setAuthenticated(false);
-            navigate('/'); // Redirect to login on error
-          }
         };
-    
         checkAuthStatus();
     }, [navigate]);
     
