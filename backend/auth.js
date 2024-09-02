@@ -56,8 +56,18 @@ router.get('/callback', async (req, res) => {
         const { access_token, refresh_token } = response.data;
 
         // Set tokens as cookies
-        res.cookie('accessToken', access_token, { httpOnly: true, secure: process.env.NODE_ENV, sameSite: 'None' });
-        res.cookie('refreshToken', refresh_token, { httpOnly: true, secure: process.env.NODE_ENV, sameSite: 'None' });
+        res.cookie('accessToken', access_token,
+            {
+                httpOnly: true,
+                secure: process.env.NODE_ENV,
+                sameSite: 'None'
+            });
+        res.cookie('refreshToken', refresh_token,
+            {
+                httpOnly: true,
+                secure: process.env.NODE_ENV,
+                sameSite: 'None'
+            });
 
         res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
     } catch (error) {
@@ -82,17 +92,16 @@ router.post('/logout', (req, res) => {
     // Clear the cookies
     res.clearCookie('accessToken', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV,
         sameSite: 'None'
 
     });
     res.clearCookie('refreshToken', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV,
         sameSite: 'None'
     });
 
-    // Optionally, you can also handle session destruction here if applicable
 
     // Respond with a success message or redirect
     res.json({ message: 'Successfully logged out' });

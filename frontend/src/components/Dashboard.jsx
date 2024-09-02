@@ -25,7 +25,8 @@ const Dashboard = () => {
             try {
                 console.log('Checking authentication status...');
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/status`, { withCredentials: true });
-                console.log('Authentication response:', response.data);
+                console.log('Authentication response:', response.data.authenticated);
+                console.log('Token response:', response.data.accessToken);
                 if (response.data.authenticated) {
                     setAuthenticated(true);
                     setAccessToken(response.data.accessToken);
