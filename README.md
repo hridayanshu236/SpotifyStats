@@ -17,3 +17,14 @@ The Spotify Dashboard is a web application that allows users to log in with thei
 - **Backend**: Node.js, Express.js
 - **API**: Spotify Web API
 - **Styling**: Tailwind CSS
+
+## Screenshots
+
+### Dashboard
+![Top Tracks](./Images/1.png)
+
+![Top Tracks](./Images/2.png)
+
+![Top Artist](./Images/3.png)
+
+
