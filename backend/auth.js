@@ -88,6 +88,7 @@ router.get('/status', (req, res) => {
         });
     }
 });
+
 router.post('/logout', (req, res) => {
     // Clear the cookies
     res.clearCookie('accessToken', {
